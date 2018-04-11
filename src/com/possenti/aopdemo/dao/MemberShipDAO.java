@@ -13,5 +13,6 @@ public class MemberShipDAO {
 	
 	public void addUser(Account account) {
 		System.out.println(getClass() + ": DOING STUFF: ADDING A MEMBERSHIP User");
+
 	}
 }
