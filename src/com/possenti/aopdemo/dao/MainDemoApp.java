@@ -17,10 +17,8 @@ public class MainDemoApp {
 		MemberShipDAO memberShipDAO = context.getBean("memberShipDAO",MemberShipDAO.class);
 		
 		Account account = new Account();
-		
-		
-		//call the business method
-		accountDAO.addAccount(account, true);
+		account.setName("Manu");
+		account.setLevel("gold");
 		
 		
 		//call the accountDAO getter/setter methods 	
@@ -29,6 +27,8 @@ public class MainDemoApp {
 		String name = accountDAO.getName(); 
 		String code = accountDAO.getServiceCode();
 		
+		//call the business method
+		accountDAO.addAccount(account, true);
 		
 		memberShipDAO.addAccount();
 		memberShipDAO.addUser(account);

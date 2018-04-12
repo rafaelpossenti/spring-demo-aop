@@ -1,43 +1,44 @@
 package com.possenti.aopdemo.aspect;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.possenti.aopdemo.Account;
 
 @Aspect
 @Component
+@Order(2)
 public class MyDemoLoggingAspect {
 	
-	//this is were we add all our related advices for logging 
-	
-	@Pointcut("execution(* com.possenti.aopdemo.dao.*.*(..))")
-	private void forDaoPackage() {};
-	
-	//create pointcut for getter methods 
-	@Pointcut("execution(* com.possenti.aopdemo.dao.*.get*(..))")
-	private void getter() {};
-	
-	//create pointcut for setter methos 
-	@Pointcut("execution(* com.possenti.aopdemo.dao.*.set*(..))")
-	private void setter() {};
-	
-	//create point: include package ... exclude getter/setter
-	@Pointcut("forDaoPackage() && !(getter() || setter())")
-	private void forDaoPackageNoGetterSetter() {};
-	
-	
-	
-	
 	//@BeforeAdvice
-	@Before("forDaoPackageNoGetterSetter()")
-	public void beforeAddAccountAdvice() {
+	@Before("com.possenti.aopdemo.aspect.AopExpressions.forDaoPackageNoGetterSetter()")
+	public void beforeAddAccountAdvice(JoinPoint joinPoint) {
 		System.out.println("\n=========> Executing @Before advice on addAccount()");
+		
+		// display the method signature
+		MethodSignature methodSig = (MethodSignature) joinPoint.getSignature(); 
+		System.out.println("Method:" + methodSig);
+		
+		// display method arguments 
+		
+		//get the args
+		Object[]  args = joinPoint.getArgs();
+		
+		//loop thru args
+		for(Object arg : args) {
+			System.out.println(arg);
+			if(arg instanceof Account) {
+				Account account = (Account) arg; 
+				System.out.println("account name: " + account.getName());
+				System.out.println("account level: " + account.getLevel());
+			}
+		}
+		
 	}
 	
-	@Before("forDaoPackageNoGetterSetter()")
-	public void performAPIAnalytics() {
-		System.out.println("\n=========> Performing API Analytics");
-	}
 	
 }
