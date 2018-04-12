@@ -21,8 +21,18 @@ public class MainDemoApp {
 		
 		//call the business method
 		accountDAO.addAccount(account, true);
+		
+		
+		//call the accountDAO getter/setter methods 	
+		accountDAO.setName("foobar");
+		accountDAO.setServiceCode("silver");
+		String name = accountDAO.getName(); 
+		String code = accountDAO.getServiceCode();
+		
+		
 		memberShipDAO.addAccount();
 		memberShipDAO.addUser(account);
+		
 		
 		//close the context
 		context.close();
