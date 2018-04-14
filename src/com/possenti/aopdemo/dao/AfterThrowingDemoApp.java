@@ -7,7 +7,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import com.possenti.aopdemo.Account;
 import com.possenti.aopdemo.DemoConfig;
 
-public class AfterReturningDemoApp {
+public class AfterThrowingDemoApp {
 	
 	public static void main(String[] args) {
 		
@@ -18,9 +18,16 @@ public class AfterReturningDemoApp {
 		AccountDAO accountDAO = context.getBean("accountDAO",AccountDAO.class);
 		
 		//call method to find the accounts
-		List<Account> accounts = accountDAO.findAccounts(false);
+		List<Account> accounts = null; 
 		
-		System.out.println("\nMain Program: AfterReturningDemoApp");
+		try {
+			boolean tripWire = true;
+			accounts = accountDAO.findAccounts(tripWire);
+		}catch(Exception exc) {
+			System.out.println("\n\nMain Program ...  caught exception: " + exc);
+		}
+		
+		System.out.println("\nMain Program: AfterThrowingDemoApp");
 		System.out.println("------");
 		
 		System.out.println(accounts);
