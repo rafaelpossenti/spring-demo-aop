@@ -1,29 +1,56 @@
 package com.possenti.aopdemo.aspect;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.aspectj.weaver.tools.cache.GeneratedCachedClassHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.possenti.aopdemo.Account;
+import com.possenti.aopdemo.dao.AroundWithLoggerDemoApp;
 
 @Aspect
 @Component
 @Order(2)
 public class MyDemoLoggingAspect {
 	
+	private Logger logger = Logger.getLogger(getClass().getName());
+	
+	@Around("execution(* com.possenti.aopdemo.service.*.getFortune(..))")
+	public Object arroundGetFortune(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
+		// display the method signature
+		String method = proceedingJoinPoint.getSignature().toShortString(); 
+		logger.info("Executing @around on Method:" + method);
+		
+		long begin = System.currentTimeMillis();
+		
+		//execute the method
+		Object result = proceedingJoinPoint.proceed();
+		
+		long end = System.currentTimeMillis();
+		
+		long duration = end - begin;
+		logger.info("\n=====>Duration: " + duration/ 1000.0 + " seconds");
+		
+		return result;
+	}
+	
+	
 	@After("execution(* com.possenti.aopdemo.dao.AccountDAO.findAccounts(..))")
 	public void afterFinallyFindAccountsAdvice(JoinPoint joinPoint) {
 		// display the method signature
 		String method = joinPoint.getSignature().toShortString(); 
-		System.out.println("Executing @after on Method:" + method);
+		logger.info("Executing @after on Method:" + method);
 	}
 	
 	
@@ -34,9 +61,9 @@ public class MyDemoLoggingAspect {
 	public void afterThrowingFindAccountAdvice(JoinPoint joinPoint,Throwable excep) {
 		// display the method signature
 		String method = joinPoint.getSignature().toShortString(); 
-		System.out.println("Executing @afterThrowing on Method:" + method);
+		logger.info("Executing @afterThrowing on Method:" + method);
 		
-		System.out.println("EXCEPTION========> " + excep);
+		logger.info("EXCEPTION========> " + excep);
 	}
 	
 	
@@ -48,13 +75,13 @@ public class MyDemoLoggingAspect {
 												List<Account> result) {
 		// display the method signature
 		String method = joinPoint.getSignature().toShortString(); 
-		System.out.println("Executing @afterReturning on Method:" + method);
+		logger.info("Executing @afterReturning on Method:" + method);
 		
-		System.out.println("RESULT========> " + result);
+		logger.info("RESULT========> " + result);
 		
 		convertAccountsNamesToUpperCase(result);
 		
-		System.out.println("RESULT========> " + result);
+		logger.info("RESULT========> " + result);
 		
 	}
 	
@@ -70,11 +97,11 @@ public class MyDemoLoggingAspect {
 	//@BeforeAdvice
 	@Before("com.possenti.aopdemo.aspect.AopExpressions.forDaoPackageNoGetterSetter()")
 	public void beforeAddAccountAdvice(JoinPoint joinPoint) {
-		System.out.println("\n=========> Executing @Before advice on addAccount()");
+		logger.info("\n=========> Executing @Before advice on addAccount()");
 		
 		// display the method signature
 		MethodSignature methodSig = (MethodSignature) joinPoint.getSignature(); 
-		System.out.println("Method:" + methodSig);
+		logger.info("Method:" + methodSig);
 		
 		// display method arguments 
 		
@@ -83,11 +110,11 @@ public class MyDemoLoggingAspect {
 		
 		//loop thru args
 		for(Object arg : args) {
-			System.out.println(arg);
+			logger.info(arg.toString());
 			if(arg instanceof Account) {
 				Account account = (Account) arg; 
-				System.out.println("account name: " + account.getName());
-				System.out.println("account level: " + account.getLevel());
+				logger.info("account name: " + account.getName());
+				logger.info("account level: " + account.getLevel());
 			}
 		}
 		
